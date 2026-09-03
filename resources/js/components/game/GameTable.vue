@@ -157,61 +157,67 @@ const hint = computed(() => {
 </script>
 
 <template>
-    <div class="flex flex-1 flex-col gap-4 sm:gap-6">
-        <section
-            class="flex flex-wrap items-center justify-center gap-2 sm:gap-3"
-            aria-label="Opponents"
+    <div class="landscape-phone:gap-2 flex flex-1 flex-col gap-4 sm:gap-6">
+        <div
+            class="landscape-phone:flex landscape-phone:items-center landscape-phone:justify-center landscape-phone:gap-4 contents"
         >
-            <PlayerSeat
-                v-for="opponent in opponents"
-                :key="opponent.id"
-                :player="opponent"
-                :is-current="state.currentPlayerId === opponent.id"
-                :is-winner="state.winnerPlayerId === opponent.id"
-            />
-        </section>
-
-        <section
-            class="relative flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white/80 px-4 py-5 shadow-[0_1px_2px_rgba(16,24,40,0.05),0_16px_40px_-24px_rgba(16,24,40,0.25)] sm:gap-6 sm:px-8 sm:py-8"
-        >
-            <p
-                :class="[
-                    'rounded-full px-4 py-1.5 text-center text-[0.7rem] font-semibold tracking-[0.15em] uppercase transition-colors sm:text-xs',
-                    isCompleted
-                        ? 'bg-amber-100 text-amber-800'
-                        : isMyTurn
-                          ? 'bg-teal-600 text-white'
-                          : 'bg-slate-100 text-slate-500',
-                ]"
+            <section
+                class="landscape-phone:flex-none landscape-phone:flex-nowrap flex flex-wrap items-center justify-center gap-2 sm:gap-3"
+                aria-label="Opponents"
             >
-                {{ turnMessage }}
-            </p>
-
-            <div class="flex items-start gap-8 sm:gap-12">
-                <DeckPile
-                    :count="state.stockCount"
-                    :enabled="canDraw && !busy"
-                    @draw="drawFrom('stock')"
-                    @pointer-down="pile.start($event, 'stock')"
+                <PlayerSeat
+                    v-for="opponent in opponents"
+                    :key="opponent.id"
+                    :player="opponent"
+                    :is-current="state.currentPlayerId === opponent.id"
+                    :is-winner="state.winnerPlayerId === opponent.id"
                 />
-                <div ref="discardZone">
-                    <DiscardPile
-                        :top="state.discardTop"
-                        :count="state.discardCount"
-                        :can-draw="
-                            canDraw && !busy && state.discardTop !== null
-                        "
-                        :can-discard="isDiscardPhase && !busy"
-                        :drop-active="holdingOverPile"
-                        :has-selection="selectedCard !== null"
-                        :selection-goes-gin="selectionGoesGin"
-                        @draw="drawFrom('discard')"
-                        @pointer-down="pile.start($event, 'discard')"
-                        @discard="playSelected"
+            </section>
+
+            <section
+                class="landscape-phone:flex-1 landscape-phone:gap-2 landscape-phone:px-4 landscape-phone:py-2 relative flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white/80 px-4 py-5 shadow-[0_1px_2px_rgba(16,24,40,0.05),0_16px_40px_-24px_rgba(16,24,40,0.25)] sm:gap-6 sm:px-8 sm:py-8"
+            >
+                <p
+                    :class="[
+                        'rounded-full px-4 py-1.5 text-center text-[0.7rem] font-semibold tracking-[0.15em] uppercase transition-colors sm:text-xs',
+                        isCompleted
+                            ? 'bg-amber-100 text-amber-800'
+                            : isMyTurn
+                              ? 'bg-teal-600 text-white'
+                              : 'bg-slate-100 text-slate-500',
+                    ]"
+                >
+                    {{ turnMessage }}
+                </p>
+
+                <div
+                    class="landscape-phone:gap-6 flex items-start gap-8 sm:gap-12"
+                >
+                    <DeckPile
+                        :count="state.stockCount"
+                        :enabled="canDraw && !busy"
+                        @draw="drawFrom('stock')"
+                        @pointer-down="pile.start($event, 'stock')"
                     />
+                    <div ref="discardZone">
+                        <DiscardPile
+                            :top="state.discardTop"
+                            :count="state.discardCount"
+                            :can-draw="
+                                canDraw && !busy && state.discardTop !== null
+                            "
+                            :can-discard="isDiscardPhase && !busy"
+                            :drop-active="holdingOverPile"
+                            :has-selection="selectedCard !== null"
+                            :selection-goes-gin="selectionGoesGin"
+                            @draw="drawFrom('discard')"
+                            @pointer-down="pile.start($event, 'discard')"
+                            @discard="playSelected"
+                        />
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
 
         <Teleport to="body">
             <div
@@ -260,7 +266,9 @@ const hint = computed(() => {
             class="sticky bottom-0 z-20 -mx-4 mt-auto border-t border-slate-200 bg-[#F7F6F3]/95 px-4 pb-2 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:pb-0"
             aria-label="Your hand"
         >
-            <div class="flex items-center justify-between px-1">
+            <div
+                class="landscape-phone:hidden flex items-center justify-between px-1"
+            >
                 <p
                     class="text-[0.65rem] font-medium tracking-[0.2em] text-slate-500 uppercase sm:text-xs"
                 >
@@ -274,36 +282,40 @@ const hint = computed(() => {
                 </span>
             </div>
 
-            <CardHand
-                :cards="cardsInHand"
-                :selected="selectedCard"
-                :spotlit="spotlitCard"
-                :meld-group-of="meldGroupOf"
-                :interactive="isMyTurn && !isCompleted && !busy"
-                :sortable="!isCompleted && carried === null"
-                :drop-zone="discardZone"
-                :can-drop="isDiscardPhase && !busy"
-                @select="(card) => emit('select', card)"
-                @reorder="(order) => emit('reorder', order)"
-                @drop="play"
-                @drop-hover="(over) => (holdingOverPile = over)"
-            />
-
             <div
-                v-if="!isCompleted"
-                class="flex flex-wrap items-center justify-center gap-3"
+                class="landscape-phone:flex landscape-phone:items-center landscape-phone:gap-3"
             >
-                <AppButton
-                    :disabled="!canDeclare || busy"
-                    @click="emit('declare', selectedCard)"
+                <CardHand
+                    :cards="cardsInHand"
+                    :selected="selectedCard"
+                    :spotlit="spotlitCard"
+                    :meld-group-of="meldGroupOf"
+                    :interactive="isMyTurn && !isCompleted && !busy"
+                    :sortable="!isCompleted && carried === null"
+                    :drop-zone="discardZone"
+                    :can-drop="isDiscardPhase && !busy"
+                    @select="(card) => emit('select', card)"
+                    @reorder="(order) => emit('reorder', order)"
+                    @drop="play"
+                    @drop-hover="(over) => (holdingOverPile = over)"
+                />
+
+                <div
+                    v-if="!isCompleted"
+                    class="landscape-phone:shrink-0 flex flex-wrap items-center justify-center gap-3"
                 >
-                    Gin
-                </AppButton>
+                    <AppButton
+                        :disabled="!canDeclare || busy"
+                        @click="emit('declare', selectedCard)"
+                    >
+                        Gin
+                    </AppButton>
+                </div>
             </div>
 
             <p
                 v-if="hint"
-                class="mt-2 text-center text-xs"
+                class="landscape-phone:hidden mt-2 text-center text-xs"
                 :class="
                     ginIsWaitingOnSelection
                         ? 'font-medium text-teal-700'

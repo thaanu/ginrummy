@@ -10,17 +10,19 @@ withDefaults(defineProps<{ subtitle?: string | null }>(), { subtitle: null });
         />
 
         <main
-            class="relative mx-auto flex min-h-dvh w-full max-w-5xl flex-col gap-5 px-4 py-5 sm:gap-8 sm:px-6 sm:py-12"
+            class="landscape-phone:gap-2 landscape-phone:py-2 relative mx-auto flex min-h-dvh w-full max-w-5xl flex-col gap-5 px-4 py-5 sm:gap-8 sm:px-6 sm:py-12"
         >
-            <header class="text-center">
+            <header
+                class="landscape-phone:flex landscape-phone:items-baseline landscape-phone:justify-center landscape-phone:gap-3 text-center"
+            >
                 <h1
-                    class="text-xl font-semibold tracking-[0.3em] text-slate-900 uppercase sm:text-3xl sm:tracking-[0.35em]"
+                    class="landscape-phone:text-sm landscape-phone:tracking-[0.2em] text-xl font-semibold tracking-[0.3em] text-slate-900 uppercase sm:text-3xl sm:tracking-[0.35em]"
                 >
                     Gin Rummy
                 </h1>
                 <p
                     v-if="subtitle"
-                    class="mt-1.5 text-[0.65rem] font-medium tracking-[0.2em] text-teal-700 uppercase sm:mt-2 sm:text-xs"
+                    class="landscape-phone:mt-0 mt-1.5 text-[0.65rem] font-medium tracking-[0.2em] text-teal-700 uppercase sm:mt-2 sm:text-xs"
                 >
                     {{ subtitle }}
                 </p>

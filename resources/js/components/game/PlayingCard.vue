@@ -64,9 +64,9 @@ const sizes = {
     xs: { box: 'h-11 w-8 rounded', index: 'text-[0.55rem]', pip: 'text-base' },
     sm: { box: 'h-16 w-11 rounded-md', index: 'text-[0.7rem]', pip: 'text-xl' },
     md: {
-        box: 'h-24 w-[4.25rem] rounded-xl sm:h-28 sm:w-20',
-        index: 'text-sm',
-        pip: 'text-3xl sm:text-4xl',
+        box: 'h-24 w-[4.25rem] rounded-xl sm:h-28 sm:w-20 landscape-phone:h-[5.25rem] landscape-phone:w-[3.75rem]',
+        index: 'text-sm landscape-phone:text-xs',
+        pip: 'text-3xl sm:text-4xl landscape-phone:text-2xl',
     },
 } as const;
 

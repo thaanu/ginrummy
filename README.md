@@ -347,6 +347,14 @@ stock card cannot be turned over until the server has handed it out, so the draw
 is committed the moment the drag begins. That also answers what happens if a
 player changes their mind halfway: nothing does. The card is theirs.
 
+**A phone held sideways gets its own layout.** Landscape is not just a wider
+portrait: height becomes the scarce dimension, and Tailwind's `sm:` breakpoint
+only knows about width, so a wide-but-short screen would otherwise be handed
+desktop-sized cards it has no room for. A `landscape-phone` variant, bounded by
+height so tablets and desktops never match it, turns the layout on its side —
+opponents and piles share one band, the hand fans across a single row, and the
+Gin button moves beside it.
+
 **Discarding is a place, not a button.** A disabled button explains nothing: a
 player who has not yet chosen a card, or who has not yet drawn, just sees
 something greyed out and concludes the game is broken. Dropping a card on the

@@ -115,17 +115,19 @@ function transformFor(index: number): string {
 </script>
 
 <template>
-    <div class="w-full px-2 pt-6 pb-2 sm:px-3 sm:pb-3">
+    <div
+        class="landscape-phone:min-w-0 landscape-phone:flex-1 landscape-phone:px-0 landscape-phone:pt-4 landscape-phone:pb-1 w-full px-2 pt-6 pb-2 sm:px-3 sm:pb-3"
+    >
         <div
             ref="row"
-            class="mx-auto flex flex-wrap items-end justify-center gap-y-3 sm:flex-nowrap sm:gap-y-0"
+            class="landscape-phone:flex-nowrap landscape-phone:gap-y-0 mx-auto flex flex-wrap items-end justify-center gap-y-3 sm:flex-nowrap sm:gap-y-0"
             :class="reorder.isDragging.value && 'select-none'"
         >
             <div
                 v-for="(card, index) in cards"
                 :key="card"
                 data-card-slot
-                class="-mr-4 last:mr-0 sm:-mr-2"
+                class="landscape-phone:-mr-4 -mr-4 last:mr-0 sm:-mr-2"
                 :style="{
                     transform: transformFor(index),
                     zIndex: layerFor(index),

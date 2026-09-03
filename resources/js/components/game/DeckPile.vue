@@ -15,7 +15,9 @@ const emit = defineEmits<{
 <template>
     <div class="flex flex-col items-center gap-2">
         <!-- Two static cards sit behind the top one to suggest depth. -->
-        <div class="relative h-24 w-[4.25rem] sm:h-28 sm:w-20">
+        <div
+            class="landscape-phone:h-[5.25rem] landscape-phone:w-[3.75rem] relative h-24 w-[4.25rem] sm:h-28 sm:w-20"
+        >
             <div
                 v-if="count > 2"
                 class="absolute inset-0 translate-x-1.5 translate-y-1.5 opacity-60"

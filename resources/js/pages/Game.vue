@@ -43,7 +43,9 @@ function leaveGame(): void {
         <div
             class="flex items-center justify-center gap-3 text-xs text-slate-500"
         >
-            <span class="font-mono tracking-[0.2em] tabular-nums">
+            <span
+                class="landscape-phone:hidden font-mono tracking-[0.2em] tabular-nums"
+            >
                 {{ game.code.value }}
             </span>
             <span v-if="connectionLabel" class="text-amber-600">
@@ -93,7 +95,9 @@ function leaveGame(): void {
             @declare="game.declareGin"
         />
 
-        <div class="flex justify-center">
+        <div
+            class="landscape-phone:absolute landscape-phone:top-1 landscape-phone:right-2 landscape-phone:z-30 flex justify-center"
+        >
             <AppButton variant="ghost" @click="leaveGame">
                 {{ game.isCompleted.value ? 'Leave game' : 'Leave table' }}
             </AppButton>

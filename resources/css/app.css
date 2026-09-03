@@ -3,6 +3,12 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/*
+ * A phone held sideways: plenty of width, very little height. Tablets and
+ * desktops are landscape too, so the height bound is what keeps this off them.
+ */
+@custom-variant landscape-phone (@media (orientation: landscape) and (max-height: 540px));
+
 @theme inline {
     --font-sans:
         Instrument Sans, ui-sans-serif, system-ui, sans-serif,

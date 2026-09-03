@@ -293,6 +293,10 @@ sudo supervisorctl status ginrummy:ginrummy-reverb   # RUNNING
 ss -lntp | grep 8080                                 # 127.0.0.1:8080
 ```
 
+**The table fits a phone.** Open the game on a phone, in both orientations. In
+portrait the hand fans onto two rows; turned sideways it should collapse to one,
+with nothing scrolling and the Gin button on screen.
+
 **Live updates are actually live.** Open the same game in two different
 browsers — not two tabs, because a player's identity lives in a cookie and tabs
 share one. Move in one window. The other should update immediately, not after a
