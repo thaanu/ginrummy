@@ -2,7 +2,7 @@
 import PlayingCard from '@/components/game/PlayingCard.vue';
 import { moveItem, useHandReorder } from '@/composables/useHandReorder';
 import type { CardCode } from '@/types/game';
-import { computed, ref, toRef, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, toRef, watch } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -36,6 +36,74 @@ const emit = defineEmits<{
 }>();
 
 const row = ref<HTMLElement | null>(null);
+
+/**
+ * How far apart the cards sit.
+ *
+ * A hand has to stay on one row whatever the screen, and a fixed overlap cannot
+ * do that: eleven cards need a tighter fan on a narrow phone than on a wide one,
+ * and the same value that fits a phone wastes half a desk monitor. So the pitch
+ * is measured — the widest spacing that still fits, never wider than the cards
+ * themselves and never so tight that a card cannot be grabbed.
+ */
+const MIN_PITCH_PX = 20;
+
+const rowWidth = ref(0);
+const cardWidth = ref(0);
+
+const pitch = computed(() => {
+    if (cardWidth.value === 0 || props.cards.length < 2) {
+        return cardWidth.value;
+    }
+
+    const room = (rowWidth.value - cardWidth.value) / (props.cards.length - 1);
+
+    return Math.max(Math.min(room, cardWidth.value), MIN_PITCH_PX);
+});
+
+/** Negative, because the cards overlap. Zero once they all fit side by side. */
+const overlap = computed(() => Math.round(pitch.value - cardWidth.value));
+
+function measure(): void {
+    const container = row.value;
+
+    if (!container) {
+        return;
+    }
+
+    // The row's own content box, not the padded parent: measuring the wrong one
+    // spreads the fan wider than the space it actually has, and it spills out
+    // rather than fitting.
+    rowWidth.value = container.clientWidth;
+
+    const card = container.querySelector('[data-card-slot]');
+
+    if (card) {
+        cardWidth.value = card.getBoundingClientRect().width;
+    }
+}
+
+let observer: ResizeObserver | undefined;
+
+onMounted(() => {
+    measure();
+
+    observer = new ResizeObserver(measure);
+
+    if (row.value) {
+        // Safe to watch the row itself: it is block level, so its width comes
+        // from the parent and never from the cards inside it.
+        observer.observe(row.value);
+    }
+});
+
+onBeforeUnmount(() => observer?.disconnect());
+
+// A card arriving or leaving changes how much room each one gets.
+watch(
+    () => props.cards.length,
+    () => requestAnimationFrame(measure),
+);
 
 const reorder = useHandReorder({
     count: computed(() => props.cards.length),
@@ -120,15 +188,16 @@ function transformFor(index: number): string {
     >
         <div
             ref="row"
-            class="landscape-phone:flex-nowrap landscape-phone:gap-y-0 mx-auto flex flex-wrap items-end justify-center gap-y-3 sm:flex-nowrap sm:gap-y-0"
+            class="flex flex-nowrap items-end justify-end sm:justify-center"
             :class="reorder.isDragging.value && 'select-none'"
         >
             <div
                 v-for="(card, index) in cards"
                 :key="card"
                 data-card-slot
-                class="landscape-phone:-mr-4 -mr-4 last:mr-0 sm:-mr-2"
+                class="last:!mr-0"
                 :style="{
+                    marginRight: `${overlap}px`,
                     transform: transformFor(index),
                     zIndex: layerFor(index),
                     transition:

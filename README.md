@@ -352,8 +352,15 @@ portrait: height becomes the scarce dimension, and Tailwind's `sm:` breakpoint
 only knows about width, so a wide-but-short screen would otherwise be handed
 desktop-sized cards it has no room for. A `landscape-phone` variant, bounded by
 height so tablets and desktops never match it, turns the layout on its side —
-opponents and piles share one band, the hand fans across a single row, and the
-Gin button moves beside it.
+opponents and piles share one band and the Gin button moves beside the hand.
+
+**The fan is measured, not guessed.** A hand always stays on one row, and no
+fixed overlap can do that: eleven cards need a tighter fan on a 320 pixel phone
+than on a desktop, and a value that fits the phone wastes half a monitor. The
+spacing is computed from the row's own width — the widest that still fits, never
+wider than the cards themselves, never tighter than a strip that can still be
+grabbed. It falls out at 22 pixels on the narrowest phone and a full 80 with no
+overlap at all on a desktop.
 
 **Discarding is a place, not a button.** A disabled button explains nothing: a
 player who has not yet chosen a card, or who has not yet drawn, just sees
