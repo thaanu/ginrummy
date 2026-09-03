@@ -64,7 +64,12 @@
             "Composer\\Config::disableProcessTimeout",
             "npm run check",
             "npm run types:check",
-            "@test"
+            "@test",
+            "@optimize:check"
+        ],
+        "optimize:check": [
+            "@php artisan optimize --ansi",
+            "@php artisan optimize:clear --ansi"
         ],
         "types:check": [
             "phpstan analyse"

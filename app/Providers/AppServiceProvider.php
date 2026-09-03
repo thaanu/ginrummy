@@ -15,9 +15,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\Compilers\BladeCompiler;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        $this->registerInertiaBladeComponents();
+    }
+
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
@@ -38,6 +44,27 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole() && ! $this->app->runningUnitTests()) {
             DevCommands::artisan('reverb:start', 'reverb');
         }
+    }
+
+    /**
+     * Re-registers Inertia's Blade component namespace against the compiler that
+     * is actually doing the compiling.
+     *
+     * `php artisan optimize` runs every cache in one process, and `config:cache`
+     * builds a throwaway application to read fresh configuration from — which
+     * takes over as the facade root and is never handed back. Inertia registers
+     * its components through the Blade *facade*, so by the time `view:cache`
+     * resolves this application's compiler, the namespace has been attached to
+     * the throwaway one and `<x-inertia::app />` cannot be found.
+     *
+     * Binding against the resolved instance rather than the facade puts it on
+     * the right compiler either way. Registering it twice is harmless.
+     */
+    private function registerInertiaBladeComponents(): void
+    {
+        $this->callAfterResolving('blade.compiler', function (BladeCompiler $blade): void {
+            $blade->componentNamespace('Inertia\\View\\Components', 'inertia');
+        });
     }
 
     /**

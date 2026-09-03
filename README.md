@@ -167,7 +167,7 @@ Release steps:
 composer install --no-dev --optimize-autoloader
 npm ci && npm run build
 php artisan migrate --force
-php artisan config:cache && php artisan route:cache && php artisan view:cache
+php artisan optimize
 php artisan queue:restart
 supervisorctl restart ginrummy:*
 ```
@@ -187,7 +187,7 @@ them together, which is right locally and wrong in production.
 php artisan test          # the whole suite
 vendor/bin/pest tests/Unit  # game rules only, no database
 composer test             # Pint, PHPStan and the suite
-composer ci:check         # the above plus frontend lint and types
+composer ci:check         # the above, plus frontend lint, types and `optimize`
 ```
 
 The suite covers game creation, joining, seat limits, duplicate nicknames,

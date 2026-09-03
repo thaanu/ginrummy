@@ -210,14 +210,15 @@ release.
 Then cache the framework's own configuration:
 
 ```bash
-sudo -u www-data php artisan config:cache
-sudo -u www-data php artisan route:cache
-sudo -u www-data php artisan view:cache
+sudo -u www-data php artisan optimize
 ```
+
+That is config, events, routes and views in one pass. `php artisan
+optimize:clear` undoes all of it.
 
 > After `config:cache`, calls to `env()` outside config files return null. This
 > application only reads env inside `config/`, so caching is safe — but it is
-> the reason to re-run these three commands after every `.env` change.
+> the reason to re-run `optimize` after every `.env` change.
 
 ## 7. Nginx and TLS
 
@@ -312,6 +313,15 @@ sudo -u www-data grep -c broadcast_failed storage/logs/laravel.log   # 0
 Any count above zero means PHP cannot reach Reverb. Check `REVERB_HOST`,
 `REVERB_PORT` and `REVERB_SCHEME` — the _server-side_ trio.
 
+**The caches built cleanly**
+
+```bash
+sudo -u www-data php artisan optimize
+```
+
+It must finish with every line reporting `DONE`. A `FAIL` on `views` is covered
+in [troubleshooting](#11-troubleshooting).
+
 **Housekeeping is scheduled**
 
 ```bash
@@ -328,9 +338,7 @@ sudo -u www-data composer install --no-dev --optimize-autoloader
 npm ci && npm run build
 sudo -u www-data php artisan migrate --force
 
-sudo -u www-data php artisan config:cache
-sudo -u www-data php artisan route:cache
-sudo -u www-data php artisan view:cache
+sudo -u www-data php artisan optimize
 
 sudo -u www-data php artisan queue:restart
 sudo supervisorctl restart ginrummy:*
@@ -369,6 +377,16 @@ bucket of ten new games a minute.
 store was flushed, or `APP_KEY` changed. Never rotate `APP_KEY` on a live site
 without expecting every player to be logged out of their game — the identity
 cookie is encrypted with it.
+
+**`optimize` fails with "Unable to locate a class or view for component
+[inertia::app]".** `optimize` runs every cache in one process, and `config:cache`
+builds a throwaway application to read fresh configuration from — which takes
+over as the facade root and is never handed back. A package that registers Blade
+components through the `Blade` _facade_ rather than the compiler it is handed
+then attaches them to the wrong compiler, and `view:cache` cannot find them.
+`AppServiceProvider::registerInertiaBladeComponents()` re-registers Inertia's
+namespace against the resolved instance to sidestep this. If another package
+ever hits the same problem, that method is the pattern to copy.
 
 **500 on every page after a deploy.** Almost always a stale config cache or
 `storage/` permissions. `php artisan config:clear` then re-cache, and confirm
