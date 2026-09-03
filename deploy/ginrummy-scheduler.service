@@ -1,0 +1,19 @@
+# Install to /etc/systemd/system/ginrummy-scheduler.service
+# Alternatively add a crontab entry:
+#   * * * * * cd /var/www/ginrummy/current && php artisan schedule:run >> /dev/null 2>&1
+
+[Unit]
+Description=Gin Rummy scheduler
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/ginrummy/current
+ExecStart=/usr/bin/php artisan schedule:work
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
